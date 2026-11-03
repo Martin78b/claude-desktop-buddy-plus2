@@ -1,11 +1,26 @@
-# claude-desktop-buddy
+# claude-desktop-buddy for M5StickC Plus2
 
-> **M5StickC Plus2 fork.** This fork ports the firmware from the `M5StickCPlus`
-> library (AXP192) to `M5Unified`, so it runs on the **M5StickC Plus2**.
-> All hardware access goes through `src/hal.h`. Build & flash with
-> `pio run -t upload`. Plus2 limitations: no battery-current or VBUS
-> measurement (USB is inferred from battery voltage ≥ 4.15V), and
-> "power off" from the menu only works on battery (USB keeps it powered).
+> **This is a fork of
+> [anthropics/claude-desktop-buddy](https://github.com/anthropics/claude-desktop-buddy)
+> ported to the M5StickC Plus2.** The upstream firmware targets the original
+> M5StickC Plus and the `M5StickCPlus` library (AXP192 power chip). The Plus2
+> has no AXP192, so this fork moves everything to
+> [`M5Unified`](https://github.com/m5stack/M5Unified) behind a small
+> hardware layer in `src/hal.h`.
+>
+> **What's different from upstream**
+>
+> - Runs on the **M5StickC Plus2** (ESP32-PICO-V3-02, 8MB flash). It does not
+>   target the original Plus anymore; use upstream for that board.
+> - 8MB partition table (`partitions_plus2_8MB.csv`): 3MB app + ~4.9MB
+>   LittleFS for character packs.
+> - A 19th pet, **Clawd**: the orange critter from Claude Code, drawn as
+>   pixel art with all seven animations.
+> - The settings menu shows the current pet's name while you cycle pets.
+>
+> **Plus2 limitations:** no battery-current or VBUS measurement (USB power
+> is inferred from battery voltage ≥ 4.15V), and "turn off" from the menu
+> only works on battery, because USB keeps the board powered.
 
 
 Claude for macOS and Windows can connect Claude Cowork and Claude Code to
@@ -35,20 +50,35 @@ waiting, and lets you approve or deny right from the device.
 
 ## Hardware
 
-The firmware targets ESP32 with the Arduino framework. As written, it
-depends on the M5StickCPlus library for its display, IMU, and button
-drivers—so you'll need that board, or a fork that swaps those drivers for
-your own pin layout.
+This fork targets the **M5StickC Plus2** with the Arduino framework and
+[`M5Unified`](https://github.com/m5stack/M5Unified) for the display, IMU,
+buttons, RTC, buzzer and power management. Board-specific code lives in
+`src/hal.h`:
+
+| | M5StickC Plus (upstream) | M5StickC Plus2 (this fork) |
+| --- | --- | --- |
+| Library | `M5StickCPlus` | `M5Unified` |
+| Power chip | AXP192 | none (GPIO4 power hold) |
+| Backlight | AXP LDO2 | PWM via M5GFX |
+| Red LED | GPIO10, active-low | GPIO19, active-high |
+| Flash | 4MB | 8MB |
+| Battery current / VBUS | measured | not available |
+
+For the original M5StickC Plus, use
+[upstream](https://github.com/anthropics/claude-desktop-buddy).
 
 ## Flashing
 
 Install
 [PlatformIO Core](https://docs.platformio.org/en/latest/core/installation/),
-then:
+connect the Plus2 over USB-C, then:
 
 ```bash
-pio run -t upload
+pio run -e m5stickc-plus2 -t upload
 ```
+
+If more than one serial port is present, pass it explicitly, for example
+`--upload-port /dev/cu.usbserial-XXXX` (`ls /dev/cu.*` on macOS).
 
 If you're starting from a previously-flashed device, wipe it first:
 
@@ -96,16 +126,22 @@ approval prompt is up). Any button press wakes it.
 
 ## ASCII pets
 
-Eighteen pets, each with seven animations (sleep, idle, busy, attention,
-celebrate, dizzy, heart). Menu → "next pet" cycles them with a counter.
-Choice persists to NVS.
+Nineteen pets, each with seven animations (sleep, idle, busy, attention,
+celebrate, dizzy, heart): capybara, duck, goose, blob, cat, dragon, octopus,
+owl, penguin, turtle, snail, ghost, axolotl, cactus, robot, rabbit, mushroom,
+chonk and **clawd**. **Hold A → settings → pet row** cycles them; the row
+shows the pet's name and a counter. Choice persists to NVS.
+
+Clawd (`src/buddies/clawd.cpp`) is pixel art rather than ASCII. It is drawn
+with `buddyFillPx()`, which scales and positions like the ASCII helpers, so
+it's a template if you want to add other pixel-art pets.
 
 ## GIF pets
 
 If you want a custom GIF character instead of an ASCII buddy, drag a
 character pack folder onto the drop target in the Hardware Buddy window. The
 app streams it over BLE and the stick switches to GIF mode live. **Settings
-→ delete char** reverts to ASCII mode.
+→ reset → delete char** reverts to ASCII mode.
 
 A character pack is a folder with `manifest.json` and 96px-wide GIFs:
 
@@ -150,6 +186,11 @@ If you're iterating on a character and would rather skip the BLE round-trip,
 `tools/flash_character.py characters/bufo` stages it into `data/` and runs
 `pio run -t uploadfs` directly over USB.
 
+> **Apple Silicon note:** PlatformIO's bundled `mklittlefs` is an x86_64
+> binary. Without Rosetta, `uploadfs` fails with `Bad CPU type in
+> executable`. Install Rosetta (`softwareupdate --install-rosetta`) or use
+> the BLE drop target instead.
+
 ## The seven states
 
 | State       | Trigger                     | Feel                        |
@@ -166,9 +207,11 @@ If you're iterating on a character and would rather skip the BLE round-trip,
 
 ```
 src/
+  hal.h          — Plus2 hardware layer over M5Unified (power, LED, IMU…)
   main.cpp       — loop, state machine, UI screens
   buddy.cpp      — ASCII species dispatch + render helpers
   buddies/       — one file per species, seven anim functions each
+                   (clawd.cpp is pixel art via buddyFillPx)
   ble_bridge.cpp — Nordic UART service, line-buffered TX/RX
   character.cpp  — GIF decode + render
   data.h         — wire protocol, JSON parse
@@ -176,6 +219,7 @@ src/
   stats.h        — NVS-backed stats, settings, owner, species choice
 characters/      — example GIF character packs
 tools/           — generators and converters
+partitions_plus2_8MB.csv — 3MB app + ~4.9MB LittleFS layout
 ```
 
 ## Availability
@@ -183,3 +227,9 @@ tools/           — generators and converters
 The BLE API is only available when the desktop apps are in developer mode
 (**Help → Troubleshooting → Enable Developer Mode**). It's intended for
 makers and developers and isn't an officially supported product feature.
+
+## Credits
+
+Original firmware, protocol and character art by Anthropic in
+[anthropics/claude-desktop-buddy](https://github.com/anthropics/claude-desktop-buddy).
+This fork adds the M5StickC Plus2 port and the Clawd pet. See `LICENSE`.
