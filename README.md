@@ -2,7 +2,8 @@
 
 > **This is a fork of
 > [anthropics/claude-desktop-buddy](https://github.com/anthropics/claude-desktop-buddy)
-> ported to the M5StickC Plus2.** The upstream firmware targets the original
+> ported to the M5StickC Plus2** by [@Martin78b](https://github.com/Martin78b)
+> ([repo](https://github.com/Martin78b/claude-desktop-buddy-plus2)). The upstream firmware targets the original
 > M5StickC Plus and the `M5StickCPlus` library (AXP192 power chip). The Plus2
 > has no AXP192, so this fork moves everything to
 > [`M5Unified`](https://github.com/m5stack/M5Unified) behind a small
@@ -136,6 +137,104 @@ Clawd (`src/buddies/clawd.cpp`) is pixel art rather than ASCII. It is drawn
 with `buddyFillPx()`, which scales and positions like the ASCII helpers, so
 it's a template if you want to add other pixel-art pets.
 
+Each preview below is the first idle frame. **ID** is the index stored in
+NVS (`src/buddy.cpp` `SPECIES_TABLE`); **menu** is the counter shown in the
+settings pet row. When a GIF character is installed it is added as one
+extra entry after the last pet.
+
+<table>
+  <tr>
+    <td align="center"><pre> n______n
+( o    o )
+(   oo   )
+ `------&#x27;</pre><b>capybara</b><br>ID 0 · menu 1/19</td>
+    <td align="center"><pre>  __
+&lt;(o )___
+ (  ._&gt;
+  `--´</pre><b>duck</b><br>ID 1 · menu 2/19</td>
+    <td align="center"><pre>  (&gt;
+  ||
+_(__)_
+ ^^^^</pre><b>goose</b><br>ID 2 · menu 3/19</td>
+    <td align="center"><pre> .--.
+(o  o)
+(    )
+ `--`</pre><b>blob</b><br>ID 3 · menu 4/19</td>
+  </tr>
+  <tr>
+    <td align="center"><pre> /\_/\
+( o   o )
+(  w   )
+(&quot;)_(&quot;)</pre><b>cat</b><br>ID 4 · menu 5/19</td>
+    <td align="center"><pre> /^\  /^\
+&lt;  o    o &gt;
+(   ww   )
+ `-vvvv-&#x27;</pre><b>dragon</b><br>ID 5 · menu 6/19</td>
+    <td align="center"><pre> .----.
+( o  o )
+(______)
+/\/\/\/\</pre><b>octopus</b><br>ID 6 · menu 7/19</td>
+    <td align="center"><pre> /\  /\
+((O)(O))
+(  &gt;&lt;  )
+ `----&#x27;</pre><b>owl</b><br>ID 7 · menu 8/19</td>
+  </tr>
+  <tr>
+    <td align="center"><pre>  .---.
+ ( o&gt;o )
+/(     )\
+ `-----`
+  J   L</pre><b>penguin</b><br>ID 8 · menu 9/19</td>
+    <td align="center"><pre>  _,--._
+ ( o    o)
+/[______]\
+ ``    ``</pre><b>turtle</b><br>ID 9 · menu 10/19</td>
+    <td align="center"><pre> \\  /
+   .--.
+ _( oo )_
+(___@@___)
+ ~~~~~~~~</pre><b>snail</b><br>ID 10 · menu 11/19</td>
+    <td align="center"><pre> .----.
+( o    o )
+|   __   |
+~`~``~`~</pre><b>ghost</b><br>ID 11 · menu 12/19</td>
+  </tr>
+  <tr>
+    <td align="center"><pre>}~(______)~{
+}~( o  o )~{
+  ( .--. )
+  (_/  \_)</pre><b>axolotl</b><br>ID 12 · menu 13/19</td>
+    <td align="center"><pre>n  ____  n
+| |o  o| |
+|_|    |_|
+  |    |</pre><b>cactus</b><br>ID 13 · menu 14/19</td>
+    <td align="center"><pre> .[||].
+[ o    o ]
+[ ==== ]
+`------&#x27;</pre><b>robot</b><br>ID 14 · menu 15/19</td>
+    <td align="center"><pre>  (\_/)
+ ( o o )
+=(  v  )=
+ (&quot;)_(&quot;)</pre><b>rabbit</b><br>ID 15 · menu 16/19</td>
+  </tr>
+  <tr>
+    <td align="center"><pre> .-o-OO-o-.
+(__________)
+   |o   o|
+   |____|</pre><b>mushroom</b><br>ID 16 · menu 17/19</td>
+    <td align="center"><pre> /\____/\
+( o    o )
+(   ..   )
+ `------&#x27;</pre><b>chonk</b><br>ID 17 · menu 18/19</td>
+    <td align="center"><pre> ▐▛███▜▌ 
+▝▜█████▛▘
+  ▘▘ ▝▝  </pre><b>clawd</b><br>ID 18 · menu 19/19</td>
+  </tr>
+</table>
+
+Clawd is shown here with the block glyphs from Claude Code's banner; on the
+device it is drawn as orange (`#D97757`) pixel art.
+
 ## GIF pets
 
 If you want a custom GIF character instead of an ASCII buddy, drag a
@@ -232,4 +331,7 @@ makers and developers and isn't an officially supported product feature.
 
 Original firmware, protocol and character art by Anthropic in
 [anthropics/claude-desktop-buddy](https://github.com/anthropics/claude-desktop-buddy).
-This fork adds the M5StickC Plus2 port and the Clawd pet. See `LICENSE`.
+The M5StickC Plus2 port and the Clawd pet are by
+[Martin (@Martin78b)](https://github.com/Martin78b) in
+[Martin78b/claude-desktop-buddy-plus2](https://github.com/Martin78b/claude-desktop-buddy-plus2).
+See `LICENSE`.

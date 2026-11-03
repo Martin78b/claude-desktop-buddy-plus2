@@ -670,22 +670,31 @@ void drawInfo() {
     _infoHeader(p, y, "CREDITS", infoPage);
     spr.setTextColor(p.textDim, p.bg);
     ln("made by");
-    y += 4;
+    y += 2;
     spr.setTextColor(p.text, p.bg);
     ln("Felix Rieseberg");
-    y += 12;
+    ln("Martin78b (Plus2)");
+    y += 8;
     spr.setTextColor(p.textDim, p.bg);
     ln("source");
-    y += 4;
+    y += 2;
     spr.setTextColor(p.text, p.bg);
     ln("github.com/anthropics");
     ln("/claude-desktop-buddy");
-    y += 12;
+    y += 4;
+    spr.setTextColor(p.textDim, p.bg);
+    ln("plus2 fork");
+    y += 2;
+    spr.setTextColor(p.text, p.bg);
+    ln("github.com/Martin78b");
+    ln("/claude-desktop-");
+    ln("buddy-plus2");
+    y += 8;
     spr.setTextColor(p.textDim, p.bg);
     ln("hardware");
-    y += 4;
-    ln("M5StickC Plus");
-    ln("ESP32 + AXP192");
+    y += 2;
+    ln("M5StickC Plus2");
+    ln("ESP32-PICO-V3-02");
   }
 }
 
