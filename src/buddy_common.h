@@ -35,3 +35,7 @@ void buddyPrintSprite(const char* const* lines, uint8_t nLines, int yOffset, uin
 void buddySetCursor(int x, int y);
 void buddySetColor(uint16_t fg);
 void buddyPrint(const char* s);
+
+// Filled rectangle for pixel-art species. dx is relative to BUDDY_X_CENTER,
+// dy to the sprite top row; both in 1x px (scaled internally).
+void buddyFillPx(int dx, int dy, int w, int h, uint16_t color);

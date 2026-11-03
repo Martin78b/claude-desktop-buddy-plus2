@@ -262,7 +262,10 @@ static void drawSettings() {
     spr.setTextColor(sel ? p.text : p.textDim, PANEL);
     spr.setCursor(mx + 6, my + 8 + i * 14);
     spr.print(sel ? "> " : "  ");
-    spr.print(settingsItems[i]);
+    // Pet row shows the current pet's name instead of the static label,
+    // so cycling species is readable without closing the menu.
+    if (i == 7) spr.print(buddyMode ? buddySpeciesName() : "gif pet");
+    else        spr.print(settingsItems[i]);
     spr.setCursor(mx + mw - 36, my + 8 + i * 14);
     spr.setTextColor(p.textDim, PANEL);
     if (i == 0) {
@@ -556,7 +559,7 @@ void drawInfo() {
     ln("to approve from here.");
     y += 6;
     spr.setTextColor(p.textDim, p.bg);
-    ln("18 species. Settings");
+    ln("19 species. Settings");
     ln("> ascii pet to cycle.");
 
   } else if (infoPage == 1) {
