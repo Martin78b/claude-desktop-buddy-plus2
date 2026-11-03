@@ -1,5 +1,13 @@
 # claude-desktop-buddy
 
+> **M5StickC Plus2 fork.** This fork ports the firmware from the `M5StickCPlus`
+> library (AXP192) to `M5Unified`, so it runs on the **M5StickC Plus2**.
+> All hardware access goes through `src/hal.h`. Build & flash with
+> `pio run -t upload`. Plus2 limitations: no battery-current or VBUS
+> measurement (USB is inferred from battery voltage ≥ 4.15V), and
+> "power off" from the menu only works on battery (USB keeps it powered).
+
+
 Claude for macOS and Windows can connect Claude Cowork and Claude Code to
 maker devices over BLE, so developers and makers can build hardware that
 displays permission prompts, recent messages, and other interactions. We've
