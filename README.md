@@ -137,103 +137,465 @@ Clawd (`src/buddies/clawd.cpp`) is pixel art rather than ASCII. It is drawn
 with `buddyFillPx()`, which scales and positions like the ASCII helpers, so
 it's a template if you want to add other pixel-art pets.
 
-Each preview below is the first idle frame. **ID** is the index stored in
-NVS (`src/buddy.cpp` `SPECIES_TABLE`); **menu** is the counter shown in the
-settings pet row. When a GIF character is installed it is added as one
-extra entry after the last pet.
+**ID** is the index stored in NVS (`SPECIES_TABLE` in `src/buddy.cpp`);
+**Menu** is the counter shown in the settings pet row; **Color** is the
+body color as the display renders it (RGB565, so slightly quantized). When a GIF character
+is installed it is added as one extra entry after the last pet. Previews are
+generated from the sprite tables in `src/buddies/`.
 
-<table>
-  <tr>
-    <td align="center"><pre> n______n
-( o    o )
-(   oo   )
- `------&#x27;</pre><b>capybara</b><br>ID 0 · menu 1/19</td>
-    <td align="center"><pre>  __
-&lt;(o )___
- (  ._&gt;
-  `--´</pre><b>duck</b><br>ID 1 · menu 2/19</td>
-    <td align="center"><pre>  (&gt;
-  ||
-_(__)_
- ^^^^</pre><b>goose</b><br>ID 2 · menu 3/19</td>
-    <td align="center"><pre> .--.
-(o  o)
-(    )
- `--`</pre><b>blob</b><br>ID 3 · menu 4/19</td>
-  </tr>
-  <tr>
-    <td align="center"><pre> /\_/\
-( o   o )
-(  w   )
-(&quot;)_(&quot;)</pre><b>cat</b><br>ID 4 · menu 5/19</td>
-    <td align="center"><pre> /^\  /^\
-&lt;  o    o &gt;
-(   ww   )
- `-vvvv-&#x27;</pre><b>dragon</b><br>ID 5 · menu 6/19</td>
-    <td align="center"><pre> .----.
-( o  o )
-(______)
-/\/\/\/\</pre><b>octopus</b><br>ID 6 · menu 7/19</td>
-    <td align="center"><pre> /\  /\
-((O)(O))
-(  &gt;&lt;  )
- `----&#x27;</pre><b>owl</b><br>ID 7 · menu 8/19</td>
-  </tr>
-  <tr>
-    <td align="center"><pre>  .---.
- ( o&gt;o )
-/(     )\
- `-----`
-  J   L</pre><b>penguin</b><br>ID 8 · menu 9/19</td>
-    <td align="center"><pre>  _,--._
- ( o    o)
-/[______]\
- ``    ``</pre><b>turtle</b><br>ID 9 · menu 10/19</td>
-    <td align="center"><pre> \\  /
-   .--.
- _( oo )_
-(___@@___)
- ~~~~~~~~</pre><b>snail</b><br>ID 10 · menu 11/19</td>
-    <td align="center"><pre> .----.
-( o    o )
-|   __   |
-~`~``~`~</pre><b>ghost</b><br>ID 11 · menu 12/19</td>
-  </tr>
-  <tr>
-    <td align="center"><pre>}~(______)~{
-}~( o  o )~{
-  ( .--. )
-  (_/  \_)</pre><b>axolotl</b><br>ID 12 · menu 13/19</td>
-    <td align="center"><pre>n  ____  n
-| |o  o| |
-|_|    |_|
-  |    |</pre><b>cactus</b><br>ID 13 · menu 14/19</td>
-    <td align="center"><pre> .[||].
-[ o    o ]
-[ ==== ]
-`------&#x27;</pre><b>robot</b><br>ID 14 · menu 15/19</td>
-    <td align="center"><pre>  (\_/)
- ( o o )
-=(  v  )=
- (&quot;)_(&quot;)</pre><b>rabbit</b><br>ID 15 · menu 16/19</td>
-  </tr>
-  <tr>
-    <td align="center"><pre> .-o-OO-o-.
-(__________)
-   |o   o|
-   |____|</pre><b>mushroom</b><br>ID 16 · menu 17/19</td>
-    <td align="center"><pre> /\____/\
-( o    o )
-(   ..   )
- `------&#x27;</pre><b>chonk</b><br>ID 17 · menu 18/19</td>
-    <td align="center"><pre> ▐▛███▜▌ 
-▝▜█████▛▘
-  ▘▘ ▝▝  </pre><b>clawd</b><br>ID 18 · menu 19/19</td>
-  </tr>
-</table>
+### At a glance (idle)
 
-Clawd is shown here with the block glyphs from Claude Code's banner; on the
-device it is drawn as orange (`#D97757`) pixel art.
+```
+ 1 capybara        2 duck            3 goose           4 blob
+    n______n           __                (>               .--.
+   ( o    o )        <(o )___            ||              (o  o)
+   (   oo   )         (  ._>           _(__)_            (    )
+    `------'           `--´             ^^^^              `--`
+
+ 5 cat             6 dragon          7 octopus         8 owl
+    /\_/\             /^\  /^\          .----.            /\  /\
+   ( o   o )         <  o    o >       ( o  o )          ((O)(O))
+   (  w   )          (   ww   )        (______)          (  ><  )
+   (")_(")            `-vvvv-'         /\/\/\/\           `----'
+
+ 9 penguin        10 turtle         11 snail          12 ghost
+     .---.             _,--._           \\  /             .----.
+    ( o>o )           ( o    o)           .--.           ( o    o )
+   /(     )\         /[______]\         _( oo )_         |   __   |
+    `-----`           ``    ``         (___@@___)        ~`~``~`~
+     J   L                              ~~~~~~~~
+
+13 axolotl        14 cactus         15 robot          16 rabbit
+   }~(______)~{      n  ____  n         .[||].             (\_/)
+   }~( o  o )~{      | |o  o| |        [ o    o ]         ( o o )
+     ( .--. )        |_|    |_|        [ ==== ]          =(  v  )=
+     (_/  \_)          |    |          `------'           (")_(")
+
+17 mushroom       18 chonk          19 clawd
+    .-o-OO-o-.        /\____/\           ████████████
+   (__________)      ( o    o )        ▄▄██ ██████ ██▄▄
+      |o   o|        (   ..   )        ▀▀████████████▀▀
+      |____|          `------'           ▀█▀█▀▀▀▀█▀█▀
+                                          ▀ ▀    ▀ ▀
+```
+
+| ID | Menu | Name | Color | Source |
+| -- | ---- | ---- | ----- | ------ |
+| 0 | 1/19 | **capybara** | `#C55531` | [`capybara.cpp`](src/buddies/capybara.cpp) |
+| 1 | 2/19 | **duck** | `#FFFF00` | [`duck.cpp`](src/buddies/duck.cpp) |
+| 2 | 3/19 | **goose** | `#FFFFFF` | [`goose.cpp`](src/buddies/goose.cpp) |
+| 3 | 4/19 | **blob** | `#00FF83` | [`blob.cpp`](src/buddies/blob.cpp) |
+| 4 | 5/19 | **cat** | `#C55531` | [`cat.cpp`](src/buddies/cat.cpp) |
+| 5 | 6/19 | **dragon** | `#FF0000` | [`dragon.cpp`](src/buddies/dragon.cpp) |
+| 6 | 7/19 | **octopus** | `#A400FF` | [`octopus.cpp`](src/buddies/octopus.cpp) |
+| 7 | 8/19 | **owl** | `#838583` | [`owl.cpp`](src/buddies/owl.cpp) |
+| 8 | 9/19 | **penguin** | `#0081FF` | [`penguin.cpp`](src/buddies/penguin.cpp) |
+| 9 | 10/19 | **turtle** | `#00FF00` | [`turtle.cpp`](src/buddies/turtle.cpp) |
+| 10 | 11/19 | **snail** | `#DE1CF6` | [`snail.cpp`](src/buddies/snail.cpp) |
+| 11 | 12/19 | **ghost** | `#FFFFFF` | [`ghost.cpp`](src/buddies/ghost.cpp) |
+| 12 | 13/19 | **axolotl** | `#FF61F6` | [`axolotl.cpp`](src/buddies/axolotl.cpp) |
+| 13 | 14/19 | **cactus** | `#00FF00` | [`cactus.cpp`](src/buddies/cactus.cpp) |
+| 14 | 15/19 | **robot** | `#C5C2C5` | [`robot.cpp`](src/buddies/robot.cpp) |
+| 15 | 16/19 | **rabbit** | `#FFFFFF` | [`rabbit.cpp`](src/buddies/rabbit.cpp) |
+| 16 | 17/19 | **mushroom** | `#FF0083` | [`mushroom.cpp`](src/buddies/mushroom.cpp) |
+| 17 | 18/19 | **chonk** | `#FFA500` | [`chonk.cpp`](src/buddies/chonk.cpp) |
+| 18 | 19/19 | **clawd** | `#DE7552` | [`clawd.cpp`](src/buddies/clawd.cpp) |
+
+Clawd is pixel art on the device (orange `#D97757` rects drawn with
+`buddyFillPx()`); here it's rendered with block characters at one block per
+4px cell, so fine details like heart eyes are simplified.
+
+### All seven states per pet
+
+First frame of each state (particles such as `z`, `!`, hearts and confetti are drawn on top and not shown).
+
+<details>
+<summary><b>capybara</b> · ID 0 · menu 1/19 · <code>#C55531</code></summary>
+
+```
+sleep         idle          busy          attention
+    .--.        n______n      n______n        ^  ^
+  _( -- )_     ( o    o )    ( v    v )    /^_____^\
+ (___zz___)    (   oo   )    (   --   )   ( O      O )
+                `------'     /`------'\    (   O    )
+                                            `------'
+
+celebrate     dizzy         heart
+  n______n     n______n       n______n
+ ( ^    ^ )   ( @    @ )     ( ^    ^ )
+ (   ww   )    (   ~~   )    (   ww   )
+ /`------'\     `------'      `------'
+```
+
+</details>
+
+<details>
+<summary><b>duck</b> · ID 1 · menu 2/19 · <code>#FFFF00</code></summary>
+
+```
+sleep       idle        busy        attention
+   __          __          __          __
+ <(-_)_)     <(o )___    <(o )___    <(O )
+~~~~~~~~~~    (  ._>      (  ._>     (    )___
+               `--´      ~ `--´       (  ._>
+                                       `--´
+
+celebrate   dizzy       heart
+   __         __           __
+ <(^ )___   <(@ )___     <(^ )___
+  (  ._>     (  .~>       (  ._>
+/`--´\        `--´         `--´
+```
+
+</details>
+
+<details>
+<summary><b>goose</b> · ID 2 · menu 3/19 · <code>#FFFFFF</code></summary>
+
+```
+sleep      idle       busy       attention
+   __         (>         (>         HONK!
+  /  \__      ||      <==||==>       (>>
+ (  zz  )   _(__)_     _(__)_        ||
+  `~~~~`     ^^^^       /^ ^\      _(__)_
+                                    ^^^^
+
+celebrate  dizzy      heart
+   (>        (x          (^>
+  _||_       ||\         ||
+ (____)     _(__)_     _(__)_
+  ^^^^       v^^v       ^^^^
+```
+
+</details>
+
+<details>
+<summary><b>blob</b> · ID 3 · menu 4/19 · <code>#00FF83</code></summary>
+
+```
+sleep        idle         busy         attention
+  .----.        .--.        .----.        .--.
+ ( -- -- )     (o  o)      ( v  v )      (    )
+ `~------~`    (    )      (   --  )    ( O  O )
+                `--`        `----`      (   !   )
+                                        `------`
+
+celebrate    dizzy        heart
+ .--------.   .----.        .----.
+( ^      ^)  ( @  @ )      ( ^  ^ )
+`~~------~`  (  ~~  )      (   ww  )
+              `----`        `----`
+```
+
+</details>
+
+<details>
+<summary><b>cat</b> · ID 4 · menu 5/19 · <code>#C55531</code></summary>
+
+```
+sleep       idle        busy        attention
+  .-..-.      /\_/\          .        /^_^\
+ ( -.- )     ( o   o )    /\_/\      ( O   O )
+ `------`~   (  w   )    ( o   o )   (  v   )
+             (")_(")     (  w   )/   (")_(")
+                         (")_(")
+
+celebrate   dizzy       heart
+  /\_/\      /\_/\        /\_/\
+ ( ^   ^ )  ( @   @ )    ( ^   ^ )
+ (  W   )   (   ~~  )    (  u   )
+/(")_(")\   (")_(")      (")_(")~
+```
+
+</details>
+
+<details>
+<summary><b>dragon</b> · ID 5 · menu 6/19 · <code>#FF0000</code></summary>
+
+```
+sleep         idle          busy          attention
+   _____        /^\  /^\        $$$$          ^  ^
+  (--   )~     <  o    o >    /^\  /^\     /^^\  /^^\
+  `vvvvv'      (   ww   )    <  v    v >  <  O    O  >
+                `-vvvv-'     (   --   )    (   <>   )
+                             /`-vvvv-'\     `-vvvv-'
+
+celebrate     dizzy         heart
+  /^\  /^\     /^\  /^\       /^\  /^\
+ <  ^    ^ >  < @    @ )     <  ^    ^ >
+ (   WW   )    (   ~~   )    (   ww   )
+ /`-vvvv-'\     `-vvvv-'      `-vvvv-'
+```
+
+</details>
+
+<details>
+<summary><b>octopus</b> · ID 6 · menu 7/19 · <code>#A400FF</code></summary>
+
+```
+sleep       idle        busy        attention
+  .----.      .----.      .----.       ^  ^
+ ( -- -- )   ( o  o )    ( v  v )     .----.
+ (~~zz~~)    (______)    (__--__)    ( O  O )
+             /\/\/\/\    /)\/\/(\    (__O___)
+                                     /\/\/\/\
+
+celebrate   dizzy       heart
+  .----.     .----.       .----.
+ ( ^  ^ )   ( @  @ )     ( ^  ^ )
+ (__ww__)   (__~~__)     (__ww__)
+//\/\/\\\   /\/\/\/\     /\/\/\/\
+```
+
+</details>
+
+<details>
+<summary><b>owl</b> · ID 7 · menu 8/19 · <code>#838583</code></summary>
+
+```
+sleep       idle        busy        attention
+  .-..-.      /\  /\       [___]     /^\  /^\
+ ( -  - )    ((O)(O))     /\  /\    ((O))((O))
+ (  __  )    (  ><  )    ((v)(v))   (   ><   )
+  `----'      `----'     (  --  )    `------'
+                          `----'
+
+celebrate   dizzy       heart
+  /\  /\     /\  /\       /\  /\
+ ((^)(^))   ((@)(@))     ((^)(^))
+ (  ww  )    (  ~~  )    (  ww  )
+ /`----'\     `----'      `----'
+```
+
+</details>
+
+<details>
+<summary><b>penguin</b> · ID 8 · menu 9/19 · <code>#0081FF</code></summary>
+
+```
+sleep       idle        busy        attention
+   .---.       .---.       .---.       .---.
+  ( -- )      ( o>o )     ( v>v )     ( O>O )
+  (_____)    /(     )\   /(     )\   /(     )\
+   ~~~~~      `-----`    /`-----`\    `-----`
+               J   L       J   L       J   L
+
+celebrate   dizzy       heart
+   .---.      .---.        .---.
+  ( ^>^ )    ( @>@ )      ( ^>^ )
+ /(_____)\  /(     )     /(     )\
+   J   L     `-----`      `-----`
+              J   L        J   L
+```
+
+</details>
+
+<details>
+<summary><b>turtle</b> · ID 9 · menu 10/19 · <code>#00FF00</code></summary>
+
+```
+sleep        idle         busy         attention
+   _,--._       _,--._       _,--._       _,--._
+  /      \     ( o    o)    ( v    v)    ( O    O)
+ /[______]\   /[______]\   /[______]\   /[__||__]\
+  ``    ``     ``    ``     >`    >`     ``    ``
+
+celebrate    dizzy        heart
+   _,--._      _,--._        _,--._
+  ( ^    ^)   ( @    @)     ( ^    ^)
+ /[__ww__]\  /[__~~__]\    /[__ww__]\
+ /``    ``\   ``    ``      ``    ``
+```
+
+</details>
+
+<details>
+<summary><b>snail</b> · ID 10 · menu 11/19 · <code>#DE1CF6</code></summary>
+
+```
+sleep       idle        busy        attention
+    .--.     \\  /       \\  /       ||  ||
+   ( zz )      .--.        .o-.        .--.
+  `-____-`   _( oo )_    _( vv )_    _( OO )_
+ ~~~~~~~~   (___@@___)  (___--___)  (___OO___)
+             ~~~~~~~~    ~~~~~~~~    ~~~~~~~~
+
+celebrate   dizzy       heart
+ \\  /       \\\         \\  /
+   .--.       .--.         .--.
+ _( ^^ )_    ( @x )      _( ^^ )_
+(___ww___)  (___~v___)  (___ww___)
+/~~~~~~~~\   ~~~~~~~~    ~~~~~~~~
+```
+
+</details>
+
+<details>
+<summary><b>ghost</b> · ID 11 · menu 12/19 · <code>#FFFFFF</code></summary>
+
+```
+sleep        idle         busy         attention
+  .----.       .----.       .----.        ! !!
+ ( -    - )   ( o    o )   ( v    v )    .----.
+ |        |   |   __   |   |   --   |   ( O    O )
+ ~`~``~`~     ~`~``~`~    /~`~``~`~\    |   OO   |
+                                       /~`~``~`~\
+
+celebrate    dizzy        heart
+  .----.      .----.        .----.
+ ( ^    ^ )  ( @    @ )    ( ^    ^ )
+ |   ww   |  |   ~~   |    |   ww   |
+/~`~``~`~\    ~`~``~`~     ~`~``~`~
+```
+
+</details>
+
+<details>
+<summary><b>axolotl</b> · ID 12 · menu 13/19 · <code>#FF61F6</code></summary>
+
+```
+sleep           idle            busy            attention
+}~(______)~{    }~(______)~{    }~(______)~{        ^  ^
+}~( -  - )~{    }~( o  o )~{    }~( v  v )~{    }}~(______)~{{
+  ( .__. )        ( .--. )        (  --  )      }}~( O  O )~{{
+  (_/  \_)        (_/  \_)       /(_/  \_)\       (  O   )
+                                                  (_/  \_)
+
+celebrate       dizzy           heart
+}~(______)~{    }~(______)~{    }~(______)~{
+}~( ^  ^ )~{    }~( @  @ )~{    }~( ^  ^ )~{
+  (  ww  )        ( ~~~~ )        ( .vv. )
+ /(_/  \_)\       (_/  \_)        (_/  \_)
+```
+
+</details>
+
+<details>
+<summary><b>cactus</b> · ID 13 · menu 14/19 · <code>#00FF00</code></summary>
+
+```
+sleep          idle           busy           attention
+    ____        n  ____  n     n  ____  n     *  ____  *
+   |--  |       | |o  o| |     | |v  v| |     n *|O  O|* n
+   |_  _|       |_|    |_|     |_|  --|_|     |*|    |*|
+    |  |          |    |         |    |       |_|    |_|
+                                               *|    |*
+
+celebrate      dizzy          heart
+ n  ____  n    n  ____   n        @
+ | |^  ^| |    | |@  @|  |     n  ____  n
+ |_|  ww|_|     |_|~~  |_|     | |^  ^| |
+  /|    |\        |    |       |_|  ww|_|
+                                 |    |
+```
+
+</details>
+
+<details>
+<summary><b>robot</b> · ID 14 · menu 15/19 · <code>#C5C2C5</code></summary>
+
+```
+sleep        idle         busy         attention
+  .[__].       .[||].        01010        [!]
+ [ -    - ]   [ o    o ]    .[||].       .[||].
+ [ ____ ]     [ ==== ]     [ #    # ]   [ O    O ]
+ `------'     `------'     [ ==== ]     [ #### ]
+                          /`------'\   /`------'\
+
+celebrate    dizzy        heart
+  .[||].      .[||].         [<3]
+ [ ^    ^ ]  [ x    x ]     .[||].
+ [ ==== ]    [ ~~~~ ]      [ ^    ^ ]
+/`------'\    `------'     [ ==== ]
+                           `------'
+```
+
+</details>
+
+<details>
+<summary><b>rabbit</b> · ID 15 · menu 16/19 · <code>#FFFFFF</code></summary>
+
+```
+sleep       idle        busy        attention
+   (\_/)       (\_/)       (\_/)      /|  |\
+  ( -.- )     ( o o )     ( v v )    /(\_/)\
+ (zzz___)    =(  v  )=   =(  v  )=   ( O  O )
+  `""""`      (")_(")    /(")_(")\   =(  v  )=
+                         ~~~~~~~~     (")_(")
+
+celebrate   dizzy       heart
+   (\_/)      (\_/)        (\_/)
+  ( ^ ^ )    ( @ @ )      ( ^ ^ )
+ =(  v  )=  =(  ~  )=    =(  v  )=
+  (")_(")    (")_(")      (")_(")
+ ~~~~~~~~
+```
+
+</details>
+
+<details>
+<summary><b>mushroom</b> · ID 16 · menu 17/19 · <code>#FF0083</code></summary>
+
+```
+sleep         idle          busy          attention
+ .-o-OO-o-.    .-o-OO-o-.    .-o-OO-o-.    /^o-OO-o^\
+(__________)  (__________)  (__________)  (__________)
+   |-  - |       |o   o|       |v   v|       |O   O|
+   |____|        |____|       /|____|\       |____|
+
+celebrate     dizzy         heart
+ .-o-OO-o-.   .-o-OO-o-.     .-o-OO-o-.
+(__________)  (________)    (__________)
+   |^   ^|      |@   @|        |^   ^|
+  /|____|\      |____|         |____|
+```
+
+</details>
+
+<details>
+<summary><b>chonk</b> · ID 17 · menu 18/19 · <code>#FFA500</code></summary>
+
+```
+sleep         idle          busy          attention
+  /\____/\      /\____/\          ?           ^  ^
+ ( -    - )    ( o    o )     /\____/\      /^____^\
+ (___zz___)    (   ..   )    ( o    o )    ( O    O )
+                `------'     (   --   )    (   o    )
+                              `------'      `------'
+
+celebrate     dizzy         heart
+  /\____/\     /\____/\       /\____/\
+ ( ^    ^ )   ( @    @ )     ( ^    ^ )
+(    WW    )   (   ~~   )    (   ww   )
+(__________)    `------'      `------'
+```
+
+</details>
+
+<details>
+<summary><b>clawd</b> · ID 18 · menu 19/19 · <code>#DE7552</code></summary>
+
+```
+sleep             idle              busy              attention
+
+
+                    ████████████      ████████████    ▄ ████████████ ▄
+  ████████████    ▄▄██ ██████ ██▄▄    ██▀██████▀██▄▄  ▀███ ██████ ███▀
+  ██▀██████▀██    ▀▀████████████▀▀   █████████████▀▀    ████████████
+▄██████████████▄    ▀█▀█▀▀▀▀█▀█▀      ▀█▀█▀▀▀▀█▀█▀      ▀█▀█▀▀▀▀█▀█▀
+▀ ▀▀▀▀▀▀▀▀▀▀▀▀ ▀     ▀ ▀    ▀ ▀        ▀ ▀    ▀ ▀        ▀ ▀    ▀ ▀
+
+celebrate         dizzy             heart
+█ ▄▄▄▄▄▄▄▄▄▄▄▄ █
+▀▄██▀██████▀██▄▀
+  ████████████      ███████████       ████████████
+  ████████████      ████████████▀   ▄▄██ ██████ ██▄▄
+  ▀  ▀    ▀  ▀    ▄████████████     ▀▀████████████▀▀
+                    ▀▀▀▀▀▀▀▀▀▀▀       ▀█▀█▀▀▀▀█▀█▀
+                                       ▀ ▀    ▀ ▀
+```
+
+</details>
 
 ## GIF pets
 
