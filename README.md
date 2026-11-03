@@ -28,6 +28,11 @@ waiting, and lets you approve or deny right from the device.
   <img src="docs/device.jpg" alt="M5StickC Plus running the buddy firmware" width="500">
 </p>
 
+<p align="center">
+  <img src="docs/device-plus2.jpg" alt="M5StickC Plus2 running this port, with the Clawd pixel-art pet" width="400">
+  <br><em>This port running on an M5StickC Plus2, with the Clawd pet.</em>
+</p>
+
 ## Hardware
 
 The firmware targets ESP32 with the Arduino framework. As written, it
