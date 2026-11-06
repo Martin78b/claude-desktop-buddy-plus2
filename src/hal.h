@@ -32,7 +32,39 @@ inline void screenPower(bool on) {
   else  { M5.Display.setBrightness(0); M5.Display.sleep(); }
 }
 
-inline float batteryVolts() { return M5.Power.getBatteryVoltage() / 1000.0f; }
+// Plus2 reads battery voltage directly on an ESP32 ADC pin (no AXP192 fuel
+// gauge). Single-shot ADC reads jitter by ±30–50mV, which makes the 60fps
+// DEVICE info page flicker constantly. Oversample + EMA filter + 15mV
+// hysteresis deadband so the displayed percentage (10mV = 1%) stays steady.
+inline int batteryMillivolts() {
+  static float    ema     = 0.0f;
+  static int      latched = 0;
+  static uint32_t lastMs  = 0;
+
+  uint32_t now = millis();
+  if (ema == 0.0f) {
+    int32_t sum = 0;
+    for (int i = 0; i < 8; i++) sum += M5.Power.getBatteryVoltage();
+    ema     = sum / 8.0f;
+    latched = (int)(ema + 0.5f);
+    lastMs  = now;
+    return latched;
+  }
+
+  if (now - lastMs >= 250) {
+    lastMs = now;
+    int32_t sum = 0;
+    for (int i = 0; i < 4; i++) sum += M5.Power.getBatteryVoltage();
+    float sample = sum / 4.0f;
+    float alpha = (fabsf(sample - ema) > 150.0f) ? 0.5f : 0.1f;
+    ema += alpha * (sample - ema);
+    int cur = (int)(ema + 0.5f);
+    if (abs(cur - latched) >= 15) latched = cur;
+  }
+  return latched;
+}
+
+inline float batteryVolts() { return batteryMillivolts() / 1000.0f; }
 
 // Plus2 cannot measure battery current.
 inline float batteryMilliamps() { return 0.0f; }
@@ -43,7 +75,11 @@ inline float batteryMilliamps() { return 0.0f; }
 inline bool usbPowered() {
   auto c = M5.Power.isCharging();
   if (c == m5::Power_Class::is_charging_t::is_charging) return true;
-  return M5.Power.getBatteryVoltage() >= 4150;
+  static bool usb = false;
+  int mv = batteryMillivolts();
+  if (mv >= 4150) usb = true;
+  else if (mv < 4100) usb = false;
+  return usb;
 }
 
 // No VBUS reading on Plus2; report 5V when we believe USB is connected.
